@@ -13,6 +13,8 @@ import java.util.logging.Logger;
  * @author Mads
  */
 public final class ChunkInfo extends TimerTask {
+    private static final Logger LOGGER = Logger.getLogger("derpstream");
+    
     private static final int BUFFER_PIECES = 3;
     private final StreamInfo streamInfo;
     private final DerpStream derpStream;
@@ -33,7 +35,7 @@ public final class ChunkInfo extends TimerTask {
         this.derpStream = derpStream;
 
         // Download chunklist
-        System.out.println("Getting latest chunklist...");
+        LOGGER.info("Getting latest chunklist...");
         String chunkList = DerpStream.downloadString(streamInfo.getChunkInfoPath());
         if(!DerpStream.isM3U(chunkList)) throw new IllegalStateException("Invalid chunklist: " + chunkList);
 
@@ -43,7 +45,7 @@ public final class ChunkInfo extends TimerTask {
         int end = chunkList.indexOf("\n", start);
         maxValidPiece = Integer.parseInt(chunkList.substring(start, end));
         writePiece = maxValidPiece - BUFFER_PIECES;
-        System.out.println("Ok. Stream is at piece " + maxValidPiece + "\n");
+        LOGGER.info("Ok. Stream is at piece " + maxValidPiece + "\n");
         
         
         
@@ -54,7 +56,7 @@ public final class ChunkInfo extends TimerTask {
             if(!line.startsWith("#")) {
                 if(line.contains(""+maxValidPiece)) {
                     chunkPath = line.replace("" + maxValidPiece, "%d");
-                    System.out.println("Setting chunkpath: " + chunkPath);
+                    LOGGER.info("Setting chunkpath: " + chunkPath);
                     break;
                 }
             }
@@ -144,7 +146,7 @@ public final class ChunkInfo extends TimerTask {
                     if(removedPiece != topPiece) throw new RuntimeException("Huh?");
 
                     if(topPiece.data != null) {
-                        System.out.println("Writing " + topPiece);
+                        LOGGER.fine("Writing " + topPiece);
 
                         // Write it!
                         fos.getChannel().write(topPiece.data);
@@ -153,7 +155,7 @@ public final class ChunkInfo extends TimerTask {
                             callbacks.finishedWriting(topPiece.pieceIndex);
                         }
                     } else {
-                        System.err.println("Skipping " + topPiece);
+                        LOGGER.warning("Skipping " + topPiece);
                         if(callbacks != null) {
                             callbacks.skippedWriting(topPiece.pieceIndex);
                         }

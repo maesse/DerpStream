@@ -9,8 +9,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -20,6 +22,8 @@ import javax.swing.UIManager;
  * @author Mads
  */
 public class DerpStreamUI extends javax.swing.JFrame implements DerpStreamCallbacks {
+    private static final Logger LOGGER = Logger.getLogger("derpstream");
+    
     DerpStream streamBrain = null;
     
     private boolean first = true;
@@ -156,7 +160,7 @@ public class DerpStreamUI extends javax.swing.JFrame implements DerpStreamCallba
                 .addContainerGap())
         );
 
-        commandField.setText("C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe \"{0}\"");
+        commandField.setText("\"C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe\" \"{0}\"");
 
         runCommandButton.setText("Run Command");
         runCommandButton.setEnabled(false);
@@ -296,7 +300,7 @@ public class DerpStreamUI extends javax.swing.JFrame implements DerpStreamCallba
                         "Available streams:", "Select Stream...", 
                         JOptionPane.QUESTION_MESSAGE, null, streams.toArray(), null);
                 if((selected instanceof StreamInfo) == false) return;
-                System.out.println("Selected: " + selected);
+                LOGGER.info("Selected: " + selected);
                 
                 // Kick it!
                 StreamInfo stream = (StreamInfo)selected;
@@ -329,6 +333,7 @@ public class DerpStreamUI extends javax.swing.JFrame implements DerpStreamCallba
         try {
             Runtime.getRuntime().exec(cmd);
         } catch (IOException ex) {
+            
             Logger.getLogger(DerpStreamUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_runCommandButtonActionPerformed
@@ -337,6 +342,18 @@ public class DerpStreamUI extends javax.swing.JFrame implements DerpStreamCallba
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        try {
+            LOGGER.setLevel(Level.ALL);
+            FileHandler handler = new FileHandler("DerpStream.log");
+            handler.setFormatter(new SimpleFormatter());
+            LOGGER.addHandler(handler);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(DerpStreamUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SecurityException ex) {
+            Logger.getLogger(DerpStreamUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         try {
             javax.swing.UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException ex) {

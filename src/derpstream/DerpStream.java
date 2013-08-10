@@ -18,6 +18,8 @@ import java.util.logging.Logger;
  * @author Mads
  */
 public class DerpStream implements Runnable {
+    private static final Logger LOGGER = Logger.getLogger("derpstream");
+    
     public static final String MAINPATH = "http://cds.x5p5f3b8.hwcdn.net/valve/smil:Dota_English.smil/";
     public static int MAX_RETRIES = 5;
     private static final int MAX_THREADS = 1;
@@ -46,18 +48,18 @@ public class DerpStream implements Runnable {
     private DerpStreamCallbacks callbacks;
     
     public DerpStream() throws IOException {
-        System.out.println("DerpStream 1.0");
+        LOGGER.info("DerpStream 1.0");
         
         // Get streams
-        System.out.println("Retrieving playlist...");
+        LOGGER.info("Retrieving playlist...");
         streamlist = StreamInfo.retrievePlaylist();
         
         // Print streams
-        System.out.println(String.format("Found %d streams...", streamlist.size()));
+        LOGGER.info(String.format("Found %d streams...", streamlist.size()));
         for (int i = 0; i < streamlist.size(); i++) {
-            System.out.println(String.format("Stream %d: %s", i, streamlist.get(i)));
+            LOGGER.info(String.format("Stream %d: %s", i, streamlist.get(i)));
         }
-        System.out.println("---");
+        LOGGER.info("---");
     }
     
     public ArrayList<StreamInfo> getStreamList() {
@@ -75,7 +77,7 @@ public class DerpStream implements Runnable {
     public void runAndSave(StreamInfo stream, String savePath, boolean blocking) throws FileNotFoundException, IOException {
         // Select stream
         selectedStream = stream;
-        System.out.println("Selecting stream: " + selectedStream);
+        LOGGER.info("Selecting stream: " + selectedStream);
         
         chunkInfo = new ChunkInfo(this, selectedStream);
         
@@ -92,7 +94,7 @@ public class DerpStream implements Runnable {
         
         // Open output file
         savePath += chunkInfo.getChunkPath();
-        System.out.println("Streaming to file: " + savePath);
+        LOGGER.info("Streaming to file: " + savePath);
         fileSavePath = savePath;
         fos = new FileOutputStream(savePath);
         

@@ -197,7 +197,7 @@
     </Container>
     <Component class="javax.swing.JTextField" name="commandField">
       <Properties>
-        <Property name="text" type="java.lang.String" value="C:\u005cProgram Files (x86)\u005cVideoLAN\u005cVLC\u005cvlc.exe &quot;{0}&quot;" containsInvalidXMLChars="true"/>
+        <Property name="text" type="java.lang.String" value="&quot;C:\u005cProgram Files (x86)\u005cVideoLAN\u005cVLC\u005cvlc.exe&quot; &quot;{0}&quot;" containsInvalidXMLChars="true"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="runCommandButton">

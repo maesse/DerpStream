@@ -5,12 +5,15 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Mads
  */
 public final class DownloadThread implements Runnable {
+    private static final Logger LOGGER = Logger.getLogger("derpstream");
+    
     private final ChunkInfo chunkInfo;
     private final DerpStream derpStream;
             
@@ -31,7 +34,7 @@ public final class DownloadThread implements Runnable {
                 Piece p = chunkInfo.grabWork();
 
 
-                System.out.println("Downloading " + p);
+                LOGGER.fine("Downloading " + p);
                 if(callbacks != null) {
                     callbacks.startedDownload(p.pieceIndex);
                 }
@@ -48,7 +51,7 @@ public final class DownloadThread implements Runnable {
                         if(callbacks != null) {
                             callbacks.retryingDownload(p.pieceIndex);
                         }
-                        System.err.println("Retrying " + p + " (attempt " + (ntry+1) + ")");
+                        LOGGER.warning("Retrying " + p + " (attempt " + (ntry+1) + ")");
                     } catch(IOException ex){
                         ex.printStackTrace(System.err);
                         break;
@@ -71,7 +74,7 @@ public final class DownloadThread implements Runnable {
                 // Register the work
                 chunkInfo.registerPiece(p);
             } catch(InterruptedException ex) {
-                System.out.println(Thread.currentThread().getName() + " interrupted.");
+                LOGGER.warning(Thread.currentThread().getName() + " interrupted.");
             }
         }
        
@@ -100,7 +103,7 @@ public final class DownloadThread implements Runnable {
         dataCopy.put(tempbuffer);
         dataCopy.flip();
 
-        System.out.println("Downloaded " + offset/1024 + " kb");
+        LOGGER.info("Downloaded " + offset/1024 + " kb");
         return dataCopy;
     }
 }
